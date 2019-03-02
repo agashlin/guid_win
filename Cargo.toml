@@ -1,11 +1,15 @@
 [package]
 name = "guid_win"
+version = "0.1.0-alpha1"
 description = "Windows GUID/CLSID/IID string and binary serialization"
 keywords = ["windows", "com", "win32"]
 categories = ["api-bindings", "os::windows-apis"]
-version = "0.1.0-alpha"
 authors = ["Adam Gashlin <agashlin@mozilla.com>"]
 license = "MIT/Apache-2.0"
+repository = "https://github.com/agashlin/guid_win"
+
+[package.metadata.docs.rs]
+default-target = "x86_64-pc-windows-msvc"
 
 [features]
 guid_serde = ["serde", "serde_derive"]
