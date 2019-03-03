@@ -40,22 +40,21 @@
 //! ```
 
 extern crate comedy;
-extern crate lpwstr;
 #[cfg(feature = "guid_serde")]
 extern crate serde;
 #[cfg(feature = "guid_serde")]
 extern crate serde_derive;
 extern crate winapi;
 
-use std::ffi::OsString;
+use std::ffi::{OsStr, OsString};
 use std::fmt::{Debug, Display, Error, Formatter, Result};
 use std::hash::{Hash, Hasher};
 use std::mem;
+use std::os::windows::ffi::{OsStrExt, OsStringExt};
 use std::result;
 use std::str::FromStr;
 
 use comedy::check_succeeded;
-use lpwstr::{FromWide, ToWide};
 
 use winapi::ctypes;
 use winapi::shared::guiddef::GUID;
@@ -123,12 +122,15 @@ impl Display for Guid {
                 s.len() as ctypes::c_int,
             )
         };
+
         if len <= 0 {
             return Err(Error);
         }
+        // len is number of characters, including the null terminator
 
-        let s = &s[..len as usize];
-        if let Ok(s) = OsString::from_wide_null(&s).into_string() {
+        let s = &s[..len as usize - 1];
+        // TODO: no reason to expect this to fail, maybe just unwrap()
+        if let Ok(s) = OsString::from_wide(&s).into_string() {
             f.write_str(&s)
         } else {
             Err(Error)
@@ -145,11 +147,14 @@ impl FromStr for Guid {
     fn from_str(s: &str) -> result::Result<Self, Self::Err> {
         let mut guid = unsafe { mem::uninitialized() };
 
+        let braced;
         let s = if s.starts_with('{') {
-            s.to_wide_null()
+            s
         } else {
-            format!("{{{}}}", s).to_wide_null()
+            braced = format!("{{{}}}", s);
+            braced.as_str()
         };
+        let s: Vec<_> = OsStr::new(s).encode_wide().chain(Some(0)).collect();
 
         unsafe { check_succeeded!(CLSIDFromString(s.as_ptr(), &mut guid)) }?;
 

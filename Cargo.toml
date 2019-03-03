@@ -1,6 +1,6 @@
 [package]
 name = "guid_win"
-version = "0.1.0-alpha1"
+version = "0.1.0-alpha2"
 description = "Windows GUID/CLSID/IID string and binary serialization"
 keywords = ["windows", "com", "win32"]
 categories = ["api-bindings", "os::windows-apis"]
@@ -16,7 +16,6 @@ guid_serde = ["serde", "serde_derive"]
 
 [dependencies]
 comedy = "0.1.0-alpha"
-lpwstr = "0.1.0-alpha"
 winapi = { version = "0.3.6", features = ["combaseapi", "guiddef"] }
 
 serde = { version = "1.0.80", optional = true }
