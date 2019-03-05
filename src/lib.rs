@@ -142,7 +142,7 @@ impl Display for Guid {
 ///
 /// Braces (`{}`) are added if missing.
 impl FromStr for Guid {
-    type Err = comedy::error::Error;
+    type Err = comedy::error::HResult;
 
     fn from_str(s: &str) -> result::Result<Self, Self::Err> {
         let mut guid = unsafe { mem::uninitialized() };
